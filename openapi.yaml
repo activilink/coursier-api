@@ -1,0 +1,217 @@
+---
+openapi: 3.0.3
+info:
+  title: API Coursier
+  version: "1.0"
+paths:
+  /v1/authenticate:
+    post:
+      tags:
+      - Delivery Resource
+      summary: Authentification
+      description: API permettant de s'authentifié afin d'obtenir un jeton à utiliser
+        pour tous les autres appels
+      requestBody:
+        description: Login et mot de passe transmiss par Coursier.ci à l' inscription
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Identifiant'
+        required: true
+      responses:
+        "200":
+          description: Authentification reussie
+          content:
+            text/plain:
+              example: AIUOIDUIUDHSSBS?NBSVSCQPOIiusoi...dushdajhd18789273KJSHKJHSKHKjh
+        "500":
+          description: Login ou mot de passe vide
+        "401":
+          description: Authentification échoué
+      security:
+      - apiKey: []
+  /v1/order:
+    post:
+      tags:
+      - Delivery Resource
+      summary: Envoi d'une demande de livraison
+      description: API permettant d'envoyer une demande d'enlevement/livraison à Coursier.ci
+      parameters:
+      - name: x-auth-token
+        in: header
+        schema:
+          description: the authentication token provided after initially authenticating
+            to the api
+          type: string
+      requestBody:
+        description: Login et mot de passe transmiss par Coursier.ci à l' inscription
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ordre'
+        required: true
+      responses:
+        "200":
+          description: Demande recu et en cours de traitement
+          content:
+            text/plain:
+              example: AIUOIDUIUDHSSBS?NBSVSCQPOIiusoi...dushdajhd18789273KJSHKJHSKHKjh
+        "401":
+          description: Authentification échoué
+      security:
+      - apiKey: []
+  /v1/tracking/{tracking-number}:
+    get:
+      tags:
+      - Delivery Resource
+      summary: Tracking
+      description: API permettant de vérifier le statut d'un enlevement/livraison
+      requestBody:
+        description: Login et mot de passe transmiss par Coursier.ci à l' inscription
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ordre'
+        required: true
+      responses:
+        "200":
+          description: Demande recu et en cours de traitement
+          content:
+            text/plain:
+              example: AIUOIDUIUDHSSBS?NBSVSCQPOIiusoi...dushdajhd18789273KJSHKJHSKHKjh
+        "401":
+          description: Authentification échoué
+      security:
+      - apiKey: []
+components:
+  schemas:
+    Adresse:
+      description: Entité représentant une adresse d'enlevement ou de livraison
+      required:
+      - isoCountryCode
+      type: object
+      properties:
+        isoCountryCode:
+          description: Code pays au format ISO 3166-1 / Alpha-3
+          default: CIV
+          type: string
+          externalDocs:
+            url: https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
+          example: "CIV , FRA ..."
+        department:
+          description: Région / Départment
+          type: string
+          example: District autonome d'Abidjan
+        city:
+          description: Ville
+          type: string
+          example: Abidjan
+        road:
+          description: Rue
+          type: string
+          example: Boulevard Valery Giscard d'Estaing
+        additionnalInfos:
+          description: Informations additionnelles
+          type: string
+          example: "Immeuble Grand Siecle, 2ième étage, Porte 21"
+        lat:
+          format: double
+          description: Coordonnées GPS (Latitude) si disponible
+          type: number
+          example: 3.673673
+        lng:
+          format: double
+          description: Coordonnées GPS (Longitude) si disponible
+          type: number
+          example: -5.673673
+    Contact:
+      description: Entité représentant un contact au point d'enlevement ou de livraison
+      required:
+      - fullName
+      type: object
+      properties:
+        fullName:
+          description: "Nom, prenom (et raison sociale s'il s'agit d'une entreprise)\
+            \ du contact du point d'enlevement ou livraison"
+          type: string
+          example: "Mr Zoul Akhdar , Coursier.ci"
+        phoneNumber:
+          description: Numéro de téléphone pour l'envoi des notifications de changement
+            de statut par SMS
+          type: string
+          example: +225 0707070707
+        emailAddress:
+          description: Adresse email pour l'envoi des notifications de changement
+            de statut par SMS
+          type: string
+          example: info@coursier.ci
+    Identifiant:
+      description: Entité représentant les identifiants de connexion
+      required:
+      - login
+      - password
+      type: object
+      properties:
+        login:
+          description: identifiant de connexion
+          type: string
+        password:
+          description: Mot de passe de connexion
+          type: string
+    Ordre:
+      description: Entité représentant ordre d'enlevement/livraison à éffectué par
+        Coursier.ci
+      required:
+      - orderId
+      - deliveryType
+      type: object
+      properties:
+        orderId:
+          description: Numéro d'identification de la demande interne au demandeur
+          type: string
+          example: AAA111-2022
+        desiredPickUpDate:
+          allOf:
+          - $ref: '#/components/schemas/LocalDate'
+          - description: "Date d'enlevement souhaité (optionnelle), si elle diffé\
+              re des accords contractuels/type d'ordre"
+            default: AAAA-MM-JJ
+        pickupAddress:
+          $ref: '#/components/schemas/Adresse'
+        pickUpContact:
+          $ref: '#/components/schemas/Contact'
+        pickupTimeRange:
+          $ref: '#/components/schemas/TimeRange'
+        desiredDeliveryDate:
+          allOf:
+          - $ref: '#/components/schemas/LocalDate'
+          - description: "Date de livraison souhaité (optionnelle), si elle diffé\
+              re des accords contractuels/type d'ordre"
+            default: AAAA-MM-JJ
+        deliveryAddress:
+          $ref: '#/components/schemas/Adresse'
+        deliveryContact:
+          $ref: '#/components/schemas/Contact'
+        deliveryTimeRange:
+          $ref: '#/components/schemas/TimeRange'
+        deliveryType:
+          description: "Type d'ordre : JJ , J1"
+          default: J1
+          type: string
+          example: "JJ pour un enlevement/livraison le jour meme, J1 pour  un enlevement/livraison\
+            \ le lendemain"
+    TimeRange:
+      description: Entité représentant une fourchette de temps pendant laquelle doit
+        etre effectuée l'enlevement ou la livraison
+      type: object
+      properties:
+        startTime:
+          allOf:
+          - $ref: '#/components/schemas/LocalTime'
+          - description: Début de la fourchette de temps au format HH:mm
+            example: 9:00
+        endTime:
+          allOf:
+          - $ref: '#/components/schemas/LocalTime'
+          - description: Fin de la fourchette de temps au format HH:mm
+            example: 14:00
