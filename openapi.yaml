@@ -1,217 +1,2540 @@
 ---
 openapi: 3.0.3
 info:
-  title: API Coursier
-  version: "1.0"
+  title: pool-materiel-ms API
+  version: 1.0.0-SNAPSHOT
 paths:
-  /v1/authenticate:
-    post:
-      tags:
-      - Delivery Resource
-      summary: Authentification
-      description: API permettant de s'authentifié afin d'obtenir un jeton à utiliser
-        pour tous les autres appels
-      requestBody:
-        description: Login et mot de passe transmiss par Coursier.ci à l' inscription
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Identifiant'
-        required: true
-      responses:
-        "200":
-          description: Authentification reussie
-          content:
-            text/plain:
-              example: AIUOIDUIUDHSSBS?NBSVSCQPOIiusoi...dushdajhd18789273KJSHKJHSKHKjh
-        "500":
-          description: Login ou mot de passe vide
-        "401":
-          description: Authentification échoué
-      security:
-      - apiKey: []
-  /v1/order:
-    post:
-      tags:
-      - Delivery Resource
-      summary: Envoi d'une demande de livraison
-      description: API permettant d'envoyer une demande d'enlevement/livraison à Coursier.ci
-      parameters:
-      - name: x-auth-token
-        in: header
-        schema:
-          description: the authentication token provided after initially authenticating
-            to the api
-          type: string
-      requestBody:
-        description: Login et mot de passe transmiss par Coursier.ci à l' inscription
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Ordre'
-        required: true
-      responses:
-        "200":
-          description: Demande recu et en cours de traitement
-          content:
-            text/plain:
-              example: AIUOIDUIUDHSSBS?NBSVSCQPOIiusoi...dushdajhd18789273KJSHKJHSKHKjh
-        "401":
-          description: Authentification échoué
-      security:
-      - apiKey: []
-  /v1/tracking/{tracking-number}:
+  /hello:
     get:
       tags:
-      - Delivery Resource
-      summary: Tracking
-      description: API permettant de vérifier le statut d'un enlevement/livraison
+      - Example Resource
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+  /v1/admin/dummy/admin:
+    get:
+      tags:
+      - Dummy Resource
+      parameters:
+      - name: x-application-id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: x-tenant-id
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/admin/dummy/anonymous:
+    get:
+      tags:
+      - Dummy Resource
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/admin/dummy/authenticated:
+    get:
+      tags:
+      - Dummy Resource
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/admin/dummy/manager:
+    get:
+      tags:
+      - Dummy Resource
+      parameters:
+      - name: x-application-id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: x-tenant-id
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/admin/dummy/tenant:
+    get:
+      tags:
+      - Dummy Resource
+      parameters:
+      - name: x-application-id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: x-tenant-id
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/apikey:
+    post:
+      tags:
+      - Token Resource
       requestBody:
-        description: Login et mot de passe transmiss par Coursier.ci à l' inscription
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Ordre'
+              $ref: '#/components/schemas/CredentialWrapper'
+      responses:
+        "200":
+          description: OK
+  /v1/asset:
+    put:
+      tags:
+      - Asset Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Asset Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/asset/all:
+    get:
+      tags:
+      - Asset Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/asset/code/{code}:
+    get:
+      tags:
+      - Asset Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/asset/lazy:
+    post:
+      tags:
+      - Asset Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/asset/unavailability/shift/{shift}/{type}:
+    post:
+      tags:
+      - Asset Resource
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ShiftType'
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocalDate'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/asset/{id}:
+    get:
+      tags:
+      - Asset Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Asset Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/asset/{id}/unavailability:
+    post:
+      tags:
+      - Asset Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unavailability'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/asset/{id}/unavailability/{unaId}:
+    delete:
+      tags:
+      - Asset Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: unaId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/asset/{id}/{propertyName}:
+    put:
+      tags:
+      - Asset Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
         required: true
       responses:
         "200":
-          description: Demande recu et en cours de traitement
-          content:
-            text/plain:
-              example: AIUOIDUIUDHSSBS?NBSVSCQPOIiusoi...dushdajhd18789273KJSHKJHSKHKjh
-        "401":
-          description: Authentification échoué
+          description: OK
+      security:
+      - apiKey: []
+  /v1/assettype:
+    put:
+      tags:
+      - Asset Type Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetType'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Asset Type Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetType'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/assettype/all:
+    get:
+      tags:
+      - Asset Type Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/assettype/check/{code}:
+    get:
+      tags:
+      - Asset Type Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/assettype/code/{code}:
+    get:
+      tags:
+      - Asset Type Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/assettype/lazy:
+    post:
+      tags:
+      - Asset Type Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/assettype/{id}:
+    get:
+      tags:
+      - Asset Type Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Asset Type Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/assettype/{id}/{propertyName}:
+    put:
+      tags:
+      - Asset Type Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/department:
+    put:
+      tags:
+      - Department Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Department'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Department Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Department'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/department/all:
+    get:
+      tags:
+      - Department Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/department/code/{code}:
+    get:
+      tags:
+      - Department Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/department/lazy:
+    post:
+      tags:
+      - Department Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/department/{id}:
+    get:
+      tags:
+      - Department Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Department Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/department/{id}/{propertyName}:
+    put:
+      tags:
+      - Department Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location:
+    put:
+      tags:
+      - Location Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Location Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location/all:
+    get:
+      tags:
+      - Location Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location/code/{code}:
+    get:
+      tags:
+      - Location Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location/destinations:
+    get:
+      tags:
+      - Location Resource
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location/lazy:
+    post:
+      tags:
+      - Location Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location/origins:
+    get:
+      tags:
+      - Location Resource
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location/type/{type}/code/{code}:
+    get:
+      tags:
+      - Location Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location/{id}:
+    get:
+      tags:
+      - Location Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Location Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/location/{id}/{propertyName}:
+    put:
+      tags:
+      - Location Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/param:
+    put:
+      tags:
+      - Param Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Param'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Param Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Param'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/param/all:
+    get:
+      tags:
+      - Param Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/param/asset-skilss:
+    get:
+      tags:
+      - Param Resource
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/param/label/{label}:
+    get:
+      tags:
+      - Param Resource
+      parameters:
+      - name: label
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/param/lazy:
+    post:
+      tags:
+      - Param Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/param/worker-skilss:
+    get:
+      tags:
+      - Param Resource
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/param/{id}:
+    get:
+      tags:
+      - Param Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Param Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/param/{id}/{propertyName}:
+    put:
+      tags:
+      - Param Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/provider:
+    put:
+      tags:
+      - Provider Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Provider'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Provider Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Provider'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/provider/all:
+    get:
+      tags:
+      - Provider Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/provider/code/{code}:
+    get:
+      tags:
+      - Provider Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/provider/lazy:
+    post:
+      tags:
+      - Provider Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/provider/{id}:
+    get:
+      tags:
+      - Provider Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Provider Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/provider/{id}/{propertyName}:
+    put:
+      tags:
+      - Provider Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request:
+    put:
+      tags:
+      - Asset Request Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Asset Request Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssetRequest'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/all:
+    get:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/assign/asset:
+    post:
+      tags:
+      - Asset Request Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignDTO'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/assign/worker:
+    post:
+      tags:
+      - Asset Request Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignDTO'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/assignments:
+    get:
+      tags:
+      - Asset Request Resource
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/lazy:
+    post:
+      tags:
+      - Asset Request Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/lazy/assignments:
+    post:
+      tags:
+      - Asset Request Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}:
+    get:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/need:
+    post:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Need'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/need/{needId}:
+    get:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: needId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: needId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/workflow/approved:
+    get:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/workflow/emitted:
+    get:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/workflow/end:
+    get:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/workflow/processed:
+    get:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/workflow/processing:
+    get:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/workflow/reject:
+    post:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/request/{id}/{propertyName}:
+    put:
+      tags:
+      - Asset Request Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/user:
+    put:
+      tags:
+      - User Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - User Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/user/all:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/user/email/{email}:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/user/lazy:
+    post:
+      tags:
+      - User Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/user/user/resetpassword/{email}:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/user/{id}:
+    get:
+      tags:
+      - User Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - User Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/user/{id}/{propertyName}:
+    put:
+      tags:
+      - User Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker:
+    put:
+      tags:
+      - Worker Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Worker'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Worker Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Worker'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/all:
+    get:
+      tags:
+      - Worker Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/category:
+    put:
+      tags:
+      - Worker Category Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerCategory'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Worker Category Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerCategory'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/category/all:
+    get:
+      tags:
+      - Worker Category Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/category/code/{code}:
+    get:
+      tags:
+      - Worker Category Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/category/lazy:
+    post:
+      tags:
+      - Worker Category Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/category/type/{type}:
+    get:
+      tags:
+      - Worker Category Resource
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/category/{id}:
+    get:
+      tags:
+      - Worker Category Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Worker Category Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/category/{id}/{propertyName}:
+    put:
+      tags:
+      - Worker Category Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/code/{code}:
+    get:
+      tags:
+      - Worker Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/lazy:
+    post:
+      tags:
+      - Worker Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/type:
+    put:
+      tags:
+      - Worker Type Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerType'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    post:
+      tags:
+      - Worker Type Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerType'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/type/all:
+    get:
+      tags:
+      - Worker Type Resource
+      parameters:
+      - name: sortBy
+        in: query
+        schema:
+          default: _id
+          type: string
+      - name: sortOrder
+        in: query
+        schema:
+          format: int32
+          default: 1
+          type: integer
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/type/code/{code}:
+    get:
+      tags:
+      - Worker Type Resource
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/type/lazy:
+    post:
+      tags:
+      - Worker Type Resource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageCriteria'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/type/{id}:
+    get:
+      tags:
+      - Worker Type Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Worker Type Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/type/{id}/{propertyName}:
+    put:
+      tags:
+      - Worker Type Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/unavailability/shift/{shift}:
+    post:
+      tags:
+      - Worker Resource
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/ShiftType'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocalDate'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/{id}:
+    get:
+      tags:
+      - Worker Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+    delete:
+      tags:
+      - Worker Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/{id}/unavailability:
+    post:
+      tags:
+      - Worker Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unavailability'
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/{id}/unavailability/{unaId}:
+    delete:
+      tags:
+      - Worker Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: unaId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - apiKey: []
+  /v1/worker/{id}/{propertyName}:
+    put:
+      tags:
+      - Worker Resource
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: propertyName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
       security:
       - apiKey: []
 components:
   schemas:
-    Adresse:
-      description: Entité représentant une adresse d'enlevement ou de livraison
+    Asset:
       required:
-      - isoCountryCode
+      - codeAsset
+      - label
       type: object
       properties:
-        isoCountryCode:
-          description: Code pays au format ISO 3166-1 / Alpha-3
-          default: CIV
+        id:
           type: string
-          externalDocs:
-            url: https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
-          example: "CIV , FRA ..."
-        department:
-          description: Région / Départment
+        codeAsset:
+          pattern: \S
           type: string
-          example: District autonome d'Abidjan
-        city:
-          description: Ville
+        label:
+          pattern: \S
           type: string
-          example: Abidjan
-        road:
-          description: Rue
+        site:
           type: string
-          example: Boulevard Valery Giscard d'Estaing
-        additionnalInfos:
-          description: Informations additionnelles
+        assetTypeCode:
           type: string
-          example: "Immeuble Grand Siecle, 2ième étage, Porte 21"
-        lat:
+        mutualization:
+          type: string
+        originalAssignment:
+          type: string
+        commissioningYear:
+          $ref: '#/components/schemas/LocalDate'
+        age:
+          format: int32
+          type: integer
+        retirementCounts:
+          $ref: '#/components/schemas/LocalDate'
+        localizationName:
+          type: string
+        registrationNumber:
+          type: string
+        brand:
+          type: string
+        model:
+          type: string
+        stdShiftDayCost:
           format: double
-          description: Coordonnées GPS (Latitude) si disponible
           type: number
-          example: 3.673673
-        lng:
+        stdShiftNightCost:
           format: double
-          description: Coordonnées GPS (Longitude) si disponible
           type: number
-          example: -5.673673
-    Contact:
-      description: Entité représentant un contact au point d'enlevement ou de livraison
-      required:
-      - fullName
+        leased:
+          type: boolean
+        providerCode:
+          type: string
+        status:
+          $ref: '#/components/schemas/AssetStatus'
+        ownerShip:
+          $ref: '#/components/schemas/AssetOwnerShip'
+        skills:
+          type: array
+          items:
+            type: string
+        unavailabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Unavailability'
+    AssetDTO:
       type: object
       properties:
-        fullName:
-          description: "Nom, prenom (et raison sociale s'il s'agit d'une entreprise)\
-            \ du contact du point d'enlevement ou livraison"
+        assetId:
           type: string
-          example: "Mr Zoul Akhdar , Coursier.ci"
-        phoneNumber:
-          description: Numéro de téléphone pour l'envoi des notifications de changement
-            de statut par SMS
+        assetNumber:
           type: string
-          example: +225 0707070707
-        emailAddress:
-          description: Adresse email pour l'envoi des notifications de changement
-            de statut par SMS
+        assetLabel:
           type: string
-          example: info@coursier.ci
-    Identifiant:
-      description: Entité représentant les identifiants de connexion
+    AssetFile:
+      type: object
+    AssetOwnerShip:
+      enum:
+      - OWNER
+      - LEASING
+      - OTHER
+      type: string
+    AssetRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        requestor:
+          type: string
+        requestorDepartment:
+          type: string
+        requestorDepartmentLabel:
+          type: string
+        requestorName:
+          type: string
+        smallDescription:
+          type: string
+        referenceNumber:
+          type: string
+        requestDate:
+          $ref: '#/components/schemas/LocalDateTime'
+        needs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Need'
+        desiredAvailabilityDate:
+          $ref: '#/components/schemas/LocalDate'
+        totalEstimatedCost:
+          format: double
+          type: number
+        requestNumber:
+          type: string
+        status:
+          $ref: '#/components/schemas/RequestStatus'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+        workerSkills:
+          type: array
+          items:
+            type: string
+        assetSkills:
+          type: array
+          items:
+            type: string
+        startingShift:
+          $ref: '#/components/schemas/ShiftType'
+        nbrShift:
+          format: int32
+          type: integer
+        origin:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+        direction:
+          $ref: '#/components/schemas/LogisticDirection'
+        movementType:
+          $ref: '#/components/schemas/MovementType'
+        longDescription:
+          type: string
+        assetFile:
+          $ref: '#/components/schemas/AssetFile'
+    AssetStatus:
+      enum:
+      - AVAILABLE
+      - RENTED
+      - UNAVAILABLE
+      - RETIRED
+      type: string
+    AssetType:
       required:
-      - login
-      - password
+      - codeAssetType
+      - label
+      type: object
+      properties:
+        id:
+          type: string
+        codeAssetType:
+          pattern: \S
+          type: string
+        label:
+          pattern: \S
+          type: string
+        averageHourlyCost:
+          format: double
+          type: number
+        averageDayHourlyCost:
+          format: double
+          type: number
+        averageNightHourlyCost:
+          format: double
+          type: number
+    AssignDTO:
+      type: object
+      properties:
+        requestId:
+          type: string
+        needId:
+          type: string
+        assignmentId:
+          type: string
+        assets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetDTO'
+        workers:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerDTO'
+        date:
+          $ref: '#/components/schemas/LocalDate'
+        shift:
+          $ref: '#/components/schemas/ShiftType'
+    Assignment:
+      type: object
+      properties:
+        internalId:
+          type: string
+        date:
+          $ref: '#/components/schemas/LocalDate'
+        shift:
+          $ref: '#/components/schemas/ShiftType'
+        assets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssetDTO'
+        workers:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkerDTO'
+    CredentialWrapper:
       type: object
       properties:
         login:
-          description: identifiant de connexion
           type: string
         password:
-          description: Mot de passe de connexion
           type: string
-    Ordre:
-      description: Entité représentant ordre d'enlevement/livraison à éffectué par
-        Coursier.ci
+    Department:
       required:
-      - orderId
-      - deliveryType
+      - codeDepartment
+      - label
+      - company
       type: object
       properties:
-        orderId:
-          description: Numéro d'identification de la demande interne au demandeur
+        id:
           type: string
-          example: AAA111-2022
-        desiredPickUpDate:
-          allOf:
-          - $ref: '#/components/schemas/LocalDate'
-          - description: "Date d'enlevement souhaité (optionnelle), si elle diffé\
-              re des accords contractuels/type d'ordre"
-            default: AAAA-MM-JJ
-        pickupAddress:
-          $ref: '#/components/schemas/Adresse'
-        pickUpContact:
-          $ref: '#/components/schemas/Contact'
-        pickupTimeRange:
-          $ref: '#/components/schemas/TimeRange'
-        desiredDeliveryDate:
-          allOf:
-          - $ref: '#/components/schemas/LocalDate'
-          - description: "Date de livraison souhaité (optionnelle), si elle diffé\
-              re des accords contractuels/type d'ordre"
-            default: AAAA-MM-JJ
-        deliveryAddress:
-          $ref: '#/components/schemas/Adresse'
-        deliveryContact:
-          $ref: '#/components/schemas/Contact'
-        deliveryTimeRange:
-          $ref: '#/components/schemas/TimeRange'
-        deliveryType:
-          description: "Type d'ordre : JJ , J1"
-          default: J1
+        codeDepartment:
+          pattern: \S
           type: string
-          example: "JJ pour un enlevement/livraison le jour meme, J1 pour  un enlevement/livraison\
-            \ le lendemain"
-    TimeRange:
-      description: Entité représentant une fourchette de temps pendant laquelle doit
-        etre effectuée l'enlevement ou la livraison
+        label:
+          pattern: \S
+          type: string
+        company:
+          pattern: \S
+          type: string
+        section:
+          type: string
+    Event:
       type: object
       properties:
-        startTime:
-          allOf:
-          - $ref: '#/components/schemas/LocalTime'
-          - description: Début de la fourchette de temps au format HH:mm
-            example: 9:00
-        endTime:
-          allOf:
-          - $ref: '#/components/schemas/LocalTime'
-          - description: Fin de la fourchette de temps au format HH:mm
-            example: 14:00
+        userName:
+          type: string
+        date:
+          $ref: '#/components/schemas/LocalDateTime'
+        previousStatus:
+          $ref: '#/components/schemas/RequestStatus'
+        newStatus:
+          $ref: '#/components/schemas/RequestStatus'
+        description:
+          type: string
+        icone:
+          type: string
+        color:
+          type: string
+    IDType:
+      enum:
+      - DRIVING_LICENCE
+      - NATIONAL_ID_CARD
+      - PASSPORT
+      - ID_CERTIFICATE
+      type: string
+    LocalDate:
+      format: date
+      type: string
+      example: 2022-03-10
+    LocalDateTime:
+      format: date-time
+      type: string
+      example: 2022-03-10T12:15:50
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+        codeLocation:
+          type: string
+        label:
+          type: string
+        cityCode:
+          type: string
+        countryCode:
+          type: string
+        locationType:
+          $ref: '#/components/schemas/LocationType'
+        type:
+          type: string
+        coordinates:
+          type: array
+          items:
+            format: double
+            type: number
+    LocationType:
+      enum:
+      - ORIGINE
+      - DESTINATION
+      - BOTH
+      type: string
+    LogisticDirection:
+      enum:
+      - IMPORT
+      - EXPORT
+      type: string
+    MovementType:
+      enum:
+      - DELIVERY
+      - EMPTY_RETRIVIAL
+      - TRANSFERT
+      - OTHER
+      type: string
+    Need:
+      type: object
+      properties:
+        internalId:
+          type: string
+        assetType:
+          type: string
+        assetLabel:
+          type: string
+        assetQty:
+          format: int32
+          type: integer
+        estimatedCost:
+          format: double
+          type: number
+        otherAssetDescription:
+          type: string
+        assignements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+    PageCriteria:
+      type: object
+      properties:
+        first:
+          format: int32
+          type: integer
+        size:
+          format: int32
+          type: integer
+        filteredBy:
+          type: object
+          additionalProperties:
+            type: object
+        sorteredBy:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SORT_DIRECTION'
+    Param:
+      required:
+      - label
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          pattern: \S
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+    Provider:
+      required:
+      - codeProvider
+      - label
+      - accountNumber
+      type: object
+      properties:
+        id:
+          type: string
+        codeProvider:
+          pattern: \S
+          type: string
+        label:
+          pattern: \S
+          type: string
+        accountNumber:
+          pattern: \S
+          type: string
+        assetIds:
+          type: array
+          items:
+            type: string
+    RequestStatus:
+      enum:
+      - DRAFT
+      - REQUEST_EMITED
+      - REQUEST_APPROVED
+      - REQUEST_REJECTED
+      - REQUEST_IN_PROCESS
+      - REQUEST_PROCESSED
+      - END_OF_OPERATION
+      - REQUEST_CLOSED
+      type: string
+    SORT_DIRECTION:
+      enum:
+      - ASCENDING
+      - DESCENDING
+      type: string
+    ShiftType:
+      enum:
+      - DAY
+      - NIGHT
+      type: string
+    Unavailability:
+      required:
+      - reason
+      type: object
+      properties:
+        internalId:
+          type: string
+        start:
+          $ref: '#/components/schemas/LocalDateTime'
+        end:
+          $ref: '#/components/schemas/LocalDateTime'
+        reason:
+          pattern: \S
+          type: string
+        type:
+          $ref: '#/components/schemas/UnavailabiltyType'
+        assignmentId:
+          type: string
+    UnavailabiltyType:
+      enum:
+      - INTERNAL
+      - RESERVED
+      - WORKING
+      type: string
+    User:
+      required:
+      - email
+      - lastName
+      - firstName
+      - function
+      - roles
+      - department
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          pattern: \S
+          type: string
+        lastName:
+          pattern: "^[A-Za-z\\s]+$"
+          type: string
+        firstName:
+          pattern: "^[A-Za-z\\s]+$"
+          type: string
+        function:
+          pattern: \S
+          type: string
+        roles:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        department:
+          pattern: \S
+          type: string
+        departmentLabel:
+          type: string
+        locale:
+          type: string
+        timezone:
+          type: string
+    Worker:
+      required:
+      - codeWorker
+      - firstName
+      - lastName
+      - idType
+      - idNumber
+      - workerCategoryId
+      - workerTypeId
+      type: object
+      properties:
+        id:
+          type: string
+        codeWorker:
+          pattern: \S
+          type: string
+        firstName:
+          pattern: \S
+          type: string
+        lastName:
+          pattern: \S
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        idType:
+          $ref: '#/components/schemas/IDType'
+        idNumber:
+          pattern: \S
+          type: string
+        workerCategoryId:
+          pattern: \S
+          type: string
+        workerCategoryLabel:
+          type: string
+        workerTypeId:
+          pattern: \S
+          type: string
+        workerTypeLabel:
+          type: string
+        enable:
+          type: boolean
+        unavailabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Unavailability'
+        birthDate:
+          $ref: '#/components/schemas/LocalDate'
+    WorkerCategory:
+      required:
+      - codeCategory
+      - label
+      - workerTypeId
+      type: object
+      properties:
+        id:
+          type: string
+        codeCategory:
+          pattern: \S
+          type: string
+        label:
+          pattern: \S
+          type: string
+        workerTypeId:
+          pattern: \S
+          type: string
+        averageHourlyRate:
+          format: double
+          minimum: 0
+          type: number
+    WorkerDTO:
+      type: object
+      properties:
+        workerId:
+          type: string
+        workerName:
+          type: string
+    WorkerType:
+      required:
+      - codeWorkerType
+      - label
+      - description
+      type: object
+      properties:
+        id:
+          type: string
+        codeWorkerType:
+          pattern: \S
+          type: string
+        label:
+          pattern: \S
+          type: string
+        description:
+          pattern: \S
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: Bearer
